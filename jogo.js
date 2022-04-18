@@ -91,6 +91,7 @@ const flappyBird = {
 
 
 function loop() {
+    flappyBird.atualiza();
     chao.desenha();
     planoDeFundo.desenha();
     flappyBird.desenha();
