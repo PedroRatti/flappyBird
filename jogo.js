@@ -89,31 +89,37 @@ function fazColisao(flappyBird, chao) {
 }
 
 function criaFlappyBird() {
-    const flappyBird = {
+    var flappyBird = {
         spriteX: 0,
         spriteY: 0,
         largura: 33,
         altura: 24,
         x: 10,
         y: 50,
-        pulo: 2.4,
+        pulo: 1.5,
         pula() {
             flappyBird.velocidade =  - flappyBird.pulo;
         },
-        gravidade: 0.10,
-        velocidade: 0,
+        gravidade: 0.05,
+        velocidade: -1,
         atualiza() {
             if (fazColisao(flappyBird, globais.chao)) {
                 console.log('colidiu');
 
                 mudaParaTela(Telas.GAME_OVER);
                 return;
-            };
-    
+            }
+
     
             flappyBird.velocidade = flappyBird.velocidade + flappyBird.gravidade;
             flappyBird.y = flappyBird.y + flappyBird.velocidade;
+
+            if (globais.placar.pontuacao >= 15) {
+                globais.flappyBird.pulo = 2;
+                
+            }
         },
+
         movimentos: [
             {spriteX: 0, spriteY: 0, }, // asa p cima
             {spriteX: 0, spriteY: 26, }, // asa no meio
@@ -265,13 +271,34 @@ function criaCanos() {
         },
         pares: [],
         atualiza() {
-            const passou100Frames = frames % 100 === 0;
-            if (passou100Frames) {
-                canos.pares.push({
-                    x: canvas.width,
-                    y: -150 * (Math.random() + 1),
-                })
+            var passou100Frames = frames % 100 === 0;
+            var passou300Frames = frames % 300 === 0; 
+
+            if (globais.flappyBird.pulo < 1.6) {
+                if (passou100Frames) {
+                    canos.pares.push({
+                        x: canvas.width,
+                        y: -150 * (Math.random() + 1),
+                    })
+                }
             }
+            
+            
+            if (globais.flappyBird.pulo >= 2) {
+                if (!canos.testeIntervaloPrimeiraFase && passou300Frames) {
+                    canos.testeIntervaloPrimeiraFase = true;
+                }
+                
+                if (canos.testeIntervaloPrimeiraFase) {
+                    if (passou100Frames) {
+                        canos.pares.push({
+                            x: canvas.width,
+                            y: -150 * (Math.random() + 1),
+                        })
+                    }
+                }
+                
+            } 
 
             canos.pares.forEach(function(par) {
                 par.x = par.x - 2;
@@ -369,7 +396,7 @@ Telas.JOGO = {
         globais.chao.atualiza();
         globais.flappyBird.atualiza();
         globais.placar.atualiza();
-    }
+    },
 }
 
 Telas.GAME_OVER = {
