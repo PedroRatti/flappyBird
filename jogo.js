@@ -88,6 +88,8 @@ function fazColisao(flappyBird, chao) {
     return false;
 }
 
+
+
 function criaFlappyBird() {
     var flappyBird = {
         spriteX: 0,
@@ -114,10 +116,7 @@ function criaFlappyBird() {
             flappyBird.velocidade = flappyBird.velocidade + flappyBird.gravidade;
             flappyBird.y = flappyBird.y + flappyBird.velocidade;
 
-            if (globais.placar.pontuacao >= 15) {
-                globais.flappyBird.pulo = 2;
-                
-            }
+            
         },
 
         movimentos: [
@@ -270,35 +269,19 @@ function criaCanos() {
             return false;
         },
         pares: [],
+        
         atualiza() {
-            var passou100Frames = frames % 100 === 0;
-            var passou300Frames = frames % 300 === 0; 
+            var passou100Frames = frames % 100 === 0; 
 
-            if (globais.flappyBird.pulo < 1.6) {
+            
                 if (passou100Frames) {
                     canos.pares.push({
                         x: canvas.width,
                         y: -150 * (Math.random() + 1),
                     })
                 }
-            }
-            
-            
-            if (globais.flappyBird.pulo >= 2) {
-                if (!canos.testeIntervaloPrimeiraFase && passou300Frames) {
-                    canos.testeIntervaloPrimeiraFase = true;
-                }
-                
-                if (canos.testeIntervaloPrimeiraFase) {
-                    if (passou100Frames) {
-                        canos.pares.push({
-                            x: canvas.width,
-                            y: -150 * (Math.random() + 1),
-                        })
-                    }
-                }
-                
-            } 
+             
+
 
             canos.pares.forEach(function(par) {
                 par.x = par.x - 2;
@@ -341,6 +324,14 @@ function criaPlacar() {
     return placar;
 }
 
+document.onkeydown = teclado;
+function teclado(e) {
+    if (e.keyCode == 32) {
+        globais.flappyBird.pula(); 
+    }
+} 
+
+
 // Telas
 
 const globais = {};
@@ -367,8 +358,11 @@ const Telas = {
             mensagemGetReady.desenha();
             
         },
-        click() {
+        teclado() {
             mudaParaTela(Telas.JOGO);
+        },
+        click() {
+            mudaParaTela(Telas.JOGO); 
         },
         atualiza() {
             globais.chao.atualiza();
@@ -405,6 +399,9 @@ Telas.GAME_OVER = {
     },
     atualiza() {
 
+    },
+    teclado(e) {
+        mudaParaTela(Telas.INICIO);
     },
     click() {
         mudaParaTela(Telas.INICIO);
